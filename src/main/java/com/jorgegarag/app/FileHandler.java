@@ -19,7 +19,8 @@ public class FileHandler {
         //or even "hey ' guy" will be 3 words.
         //I would need to expend more time reading about regular expressions to correct it.
         //Sorry :S
-        Scanner scan = new Scanner(file).useDelimiter("[^\\w']+");
+        String regex = "[!\\u0022#$%&()*+,-./:;<=>?@\\u005B\\u005D^_`{|}~\\s\\t\\n\\r]+";
+        Scanner scan = new Scanner(file).useDelimiter(regex);
 
         StringJoiner wordSeq = new StringJoiner(" ");
         String prev1 = "";

@@ -21,13 +21,13 @@ public class FileHandlerTest {
         Map<String, Integer> expected = new HashMap<>();
         File sequencesFile = new File(TEST_SEQUENCES);
 
-        Scanner scan = new Scanner(sequencesFile).useDelimiter("[-\\t\\r\\n]+");
+        Scanner scan = new Scanner(sequencesFile);
 
-        while(scan.hasNext()) {
+        while(scan.hasNextLine()) {
             String frequency = "1";
-            String sequence = scan.next();
-            if(scan.hasNext()) {
-                frequency = scan.next();
+            String sequence = scan.nextLine();
+            if(scan.hasNextLine()) {
+                frequency = scan.nextLine();
             }
             expected.put(sequence, Integer.parseInt(frequency) );
         }
