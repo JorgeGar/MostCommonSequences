@@ -10,6 +10,7 @@ public class MostCommonSequences
     private static final int SEQUENCE = 3; // This value could be get from args too.
     private static final int TOP = 100; // This value could be get from args too.
 
+    //TODO: Add a mechanism to avoid infinite loop if no arguments nor standard input is provided.
     public static void main( String[] args ) throws IOException {
         List<File> files = new ArrayList<>();
         if( args.length < 1 ) {
