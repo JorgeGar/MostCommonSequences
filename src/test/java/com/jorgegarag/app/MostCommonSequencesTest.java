@@ -39,7 +39,6 @@ public class MostCommonSequencesTest
         System.setIn(System.in);
     }
 
-    //I'm not sure on how to test the standard input to be honest.
     @Test
     public void emptyArgsTest() throws IOException {
         MostCommonSequences.main(new String[0]);
