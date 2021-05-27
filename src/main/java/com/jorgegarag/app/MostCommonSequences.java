@@ -10,24 +10,14 @@ public class MostCommonSequences
     private static final int SEQUENCE = 3; // This value could be get from args too.
     private static final int TOP = 100; // This value could be get from args too.
 
-    //TODO: Add a mechanism to avoid infinite loop if no arguments nor standard input is provided.
     public static void main( String[] args ) throws IOException {
         List<File> files = new ArrayList<>();
-        if( args.length < 1 ) {
-            File input = new File("input.txt");
-            FileWriter fw = new FileWriter(input);
-            Scanner scanner = new Scanner(System.in);
-            while(scanner.hasNextLine()) {
-                fw.write(scanner.nextLine());
-            }
-            scanner.close();
-            fw.close();
+        FileHandler fileHandler = new FileHandler();
 
-            files.add(input);
+        if( args.length < 1 ) {
+            files.add(fileHandler.generateTempFileFromInputStream(System.in));
         } else {
 
-            //I split the functionality in two loops for the sake of code readability,
-            // since it is not expected to have a large amount of arguments.
             for (String arg : args) {
                 File temp = new File(arg);
                 if (temp.exists()) {
@@ -43,19 +33,9 @@ public class MostCommonSequences
             }
         }
 
-        //As it was not specified if the most common sequences, when providing multiple books,
-        //should be treated separately or as a hole group, I decided to implement this second approach,
-        //since it is a bit more complex. Nevertheless, this is also more memory consuming, since all
-        //words will be stored in the same Hash. Treating them separately, on the other hand, will be
-        //slightly easier, but would clean the hash each time, so it will consume less memory.
-        //
-        //I understand that if we allow multiple sources, it makes sense to analyze them as a whole,
-        //because if you would only one to treat them separately, you can always run this in different
-        //containers and parallelize the execution to improve the timings.
-        FileHandler fileHandler = new FileHandler();
         Map<String, Integer> sequences = new HashMap<>();
         for(File file : files) {
-            fileHandler.MapFromFile(file, SEQUENCE, sequences);
+            fileHandler.increaseSequenceMapFromFile(file, SEQUENCE, sequences);
         }
 
         Worker worker = new Worker();
@@ -63,4 +43,6 @@ public class MostCommonSequences
 
         System.out.println(worker.listToFormattedString(topSequences));
     }
+
+
 }
