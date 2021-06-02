@@ -11,10 +11,7 @@ import static org.junit.Assert.assertEquals;
 
 public class WorkerTest {
     private final String TEST_SEQUENCES = "src/test/resources/fileWordsTestSequencesFreq.txt";
-    private final int TEST_TOP_5_ELEMENTS = 5;
-
-    private final String TEST_FILE_BOOK = "src/test/resources/mobydick.txt";
-    private final int TEST_TOP_100_ELEMENTS = 100;
+    private final int TEST_TOP_ELEMENTS = 1;
 
     private Worker worker = new Worker();
 
@@ -28,7 +25,7 @@ public class WorkerTest {
         Scanner scan = new Scanner(sequencesFile).useDelimiter("[-\\t\\r\\n]+");
 
         int top = 0;
-        while(scan.hasNext() && top < TEST_TOP_5_ELEMENTS) {
+        while(scan.hasNext()) {
             String frequency = "1";
             String sequence = scan.next();
             if(scan.hasNext()) {
@@ -41,8 +38,8 @@ public class WorkerTest {
         }
         scan.close();
 
-        List<String> actual = worker.getTopSequences(map, TEST_TOP_5_ELEMENTS);
-        assertEquals(sequences.size(), actual.size());
+        List<String> actual = worker.getTopSequences(map, TEST_TOP_ELEMENTS);
+        assertEquals(TEST_TOP_ELEMENTS, actual.size());
         int i = 0;
         for( String element : actual ) {
             assertEquals(sequences.get(i)+" - "+frequencies.get(i),element);

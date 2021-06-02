@@ -1,65 +1,52 @@
 package com.jorgegarag.app;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.*;
 
 public class FileHandler {
+    private final String splitPattern = "[!\\u0022#$%&()*+,-./:;<=>?@\\u005B\\u005D^_`{|}~\\s\\t\\n\\r]+";
+    private LinkedList<String> sequenceBatch;
+    private Scanner scan;
 
-    public void MapFromFile(File file, int sequence, Map<String, Integer> sequences) throws FileNotFoundException {
+    public void increaseSequenceMapFromFile(File file, int sequence, Map<String, Integer> sequences) throws FileNotFoundException {
+        scan = new Scanner(file).useDelimiter(splitPattern);
 
-        //This regular expression will have issues handling abbreviations
-        //and version marks such as Vol. 1 or V.1, but I'm not sure if this
-        //is important for the challenge, and I have decided to focus on the
-        //rest of the code, since this could be checked easily using any
-        //regex analyzer, such as regexr.com
-        //
-        //Also, it will consider ' character as a word as long as it is not
-        //part of a word. So "he's" or "Smiths'" will be a word, but "hey'" will be too
-        //or even "hey ' guy" will be 3 words.
-        //I would need to expend more time reading about regular expressions to correct it.
-        //Sorry :S
-        String regex = "[!\\u0022#$%&()*+,-./:;<=>?@\\u005B\\u005D^_`{|}~\\s\\t\\n\\r]+";
-        Scanner scan = new Scanner(file).useDelimiter(regex);
+        sequenceBatch = new LinkedList<>();
 
-        StringJoiner wordSeq = new StringJoiner(" ");
-        String prev1 = "";
-        String prev2 = "";
-        String current  = "";
+        initFirstSequence(sequence, sequences);
 
-        if(scan.hasNext()) {
-            prev1 = scan.next().toLowerCase();
-            wordSeq.add(prev1);
-        }
+        scan.forEachRemaining( nextWord -> {
+            sequenceBatch.removeFirst();
+            sequenceBatch.add(nextWord.toLowerCase());
 
-        if(scan.hasNext()) {
-            prev2 = scan.next().toLowerCase();
-            wordSeq.add(prev2);
-        }
-
-        if(scan.hasNext()) {
-            current = scan.next().toLowerCase();
-            wordSeq.add(current);
-        }
-
-        String wordSeqResult = wordSeq.toString();
-        sequences.put(wordSeqResult, sequences.getOrDefault(wordSeqResult, 0) + 1);
-        wordSeq = new StringJoiner(" ");
-
-        while(scan.hasNext()) {
-            String word = scan.next().toLowerCase();
-            prev1 = prev2;
-            prev2 = current;
-            current = word;
-
-            wordSeq.add(prev1)
-                    .add(prev2)
-                    .add(current);
-
-            wordSeqResult = wordSeq.toString();
+            String wordSeqResult = String.join(" ", sequenceBatch);
             sequences.put(wordSeqResult, sequences.getOrDefault(wordSeqResult, 0) + 1);
-            wordSeq = new StringJoiner(" ");
-        }
+            }
+        );
         scan.close();
+    }
+
+    public File generateTempFileFromInputStream(InputStream source) throws IOException {
+        File input = new File("input.txt");
+        OutputStreamWriter fw = new FileWriter(input);
+        Scanner scanner = new Scanner(source);
+        while(scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            fw.write(line);
+            fw.write(System.lineSeparator());
+        }
+        scanner.close();
+        fw.close();
+        return input;
+    }
+
+    private void initFirstSequence(int sequence, Map<String, Integer> sequences) {
+        for(int i = 0; i < sequence && scan.hasNext(); i++) {
+            String word = scan.next().toLowerCase();
+            sequenceBatch.add(word);
+        }
+
+        String wordSeqResult = String.join(" ",sequenceBatch);
+        sequences.put(wordSeqResult, sequences.getOrDefault(wordSeqResult, 0) + 1);
     }
 }

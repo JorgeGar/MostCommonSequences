@@ -1,7 +1,6 @@
 package com.jorgegarag.app;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -14,8 +13,6 @@ import java.util.StringJoiner;
 public class MostCommonSequencesTest
 {
     private static final String INVALID_FILE = "INVALID_FILE";
-    private static final String HELP = "The program requires at least one valid file path.\n" +
-            "Please try using a command as follows: java MostCommonSequences file.txt file2.txt";
     private static final String FILE_ERROR = "Argument 'INVALID_FILE' is not a valid file. Discarding it...";
     private static final String NO_VALID_FILES = "There was not any valid file. Exiting...";
     private final String TEST_FILE = "src/test/resources/fileWordsTest.txt";
@@ -26,21 +23,36 @@ public class MostCommonSequencesTest
 
 
     @Before
-    public void setUp() {
+    public void setUp() throws FileNotFoundException {
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));
+
+        File testFile = new File(TEST_FILE);
+        InputStream testInput = new FileInputStream(testFile);
+        System.setIn(testInput);
     }
 
     @After
     public void tearDown() {
         System.setOut(System.out);
         System.setErr(System.err);
+        System.setIn(System.in);
     }
 
-    //I'm not sure on how to test the standard input to be honest.
     @Test
-    public void emptyArgsTest() {
-        assertTrue(true);
+    public void emptyArgsTest() throws IOException {
+        MostCommonSequences.main(new String[0]);
+        File sequencesFile = new File(TEST_RESULT);
+
+        Scanner scan = new Scanner(sequencesFile);
+        StringJoiner stringJoiner = new StringJoiner("\n");
+
+        while(scan.hasNextLine()) {
+            stringJoiner.add(scan.nextLine());
+        }
+        scan.close();
+
+        assertEquals(stringJoiner.toString(),  outContent.toString().trim());
     }
 
 
